@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env sh
 
 #### 
 #  The following variables must be set in the build.rc file before executing this script
 ####
-#ARTIFACT_URL=
+ARTIFACT_URL=${ARTIFACT_URL:-http://artifactory.stackinabox.io/artifactory}
 #ARTIFACT_STREAM=
 
 #DOCKER_EMAIL=
@@ -15,12 +15,21 @@ source ./build.rc
 ####
 # UCD_VERSION will be read from the stream file on the artifact server so no need to set it
 ####
-UCD_AGT_VERSION=
+UCD_AGT_VERSION=${UCD_VERSION:-latest}
+UCD_AGT_DOWNLOAD_URL="$ARTIFACT_URL/urbancode-snapshot-local/urbancode/ibm-ucd-agent/$UCD_AGT_VERSION/ibm-ucd-agent.zip"
 
-curl -O "$ARTIFACT_URL/urbancode/ibm-ucd-agent/$ARTIFACT_STREAM.txt"
-UCD_AGT_VERSION=`cat $ARTIFACT_STREAM.txt`  # i.e. latest or dev or qa or vnext etc... file will contain just the version number
-rm -f $ARTIFACT_STREAM.txt
+rm -rf artifacts/*
+
+echo "artifact url: $ARTIFACT_URL"
+echo "ucd version:  $UCD_AGT_VERSION"
+echo "ucd download url: $UCD_AGT_DOWNLOAD_URL"
+
+mkdir -p artifacts/
+
+curl -u$ARTIFACT_USERNAME:$ARTIFACT_PASSWORD -O $UCD_AGT_DOWNLOAD_URL
+unzip -q ibm-ucd-agent.zip -d artifacts/
+rm -f ibm-ucd-agent.zip
 
 docker login -e="$DOCKER_EMAIL" -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
-docker build -t stackinabox/urbancode-deploy-agent:$UCD_AGT_VERSION --build-arg AGENT_MEDIA_URL=$ARTIFACT_URL/urbancode/ibm-ucd-agent/$UCD_AGT_VERSION/ibm-ucd-agent.zip .
+docker build -t stackinabox/urbancode-deploy-agent:$UCD_AGT_VERSION .
 docker push stackinabox/urbancode-deploy-agent:$UCD_AGT_VERSION
