@@ -24,6 +24,8 @@ echo "artifact url: $ARTIFACT_URL"
 echo "ucd version:  $UCD_AGT_VERSION"
 echo "ucd download url: $UCD_AGT_DOWNLOAD_URL"
 
+mkdir -p artifacts/
+
 curl -u$ARTIFACT_USERNAME:$ARTIFACT_PASSWORD -O $UCD_AGT_DOWNLOAD_URL
 unzip -q ibm-ucd-agent.zip -d artifacts/
 rm -f ibm-ucd-agent.zip
