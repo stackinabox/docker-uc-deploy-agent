@@ -2,10 +2,14 @@
 Containerised UrbanCode Deploy Agent
 
 #### **Build Image:**<br />
-`git clone` this repo <br />
-`docker build -t stackinabox/urbancode-deploy-agent:latest --build-arg AGENT_MEDIA_URL=http://192.168.27.100:8080/tools/ibm-ucd-agent.zip .`<br />
 
-Change AGENT_MEDIA_URL as appropriate, can be local filesystem or remote URL
+`git clone https://github.com/stackinabox/docker-uc-deploy-agent.git`
+
+`curl -u%username%:%password% -O http://artifactory.stackinabox.io/artifactory/urbancode-snapshot-local/urbancode/ibm-ucd-agent/%UCD_AGENT_VERSION%/ibm-ucd-agent.zip`
+	
+`unzip -q ibm-ucd-agent.zip -d artifacts/`
+`rm -f ibm-ucd-agent.zip`
+`docker build -t stackinabox/urbancode-deploy-agent:%UCD_AGENT_VERSION% .`
 
 #### **Run Image:**<br />
 `docker run -d -e "UCD_SERVER=192.168.27.100" --name localagent stackinabox/urbancode-deploy-agent`<br />
