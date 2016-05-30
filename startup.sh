@@ -15,5 +15,4 @@ fi
 
 echo "$IP_ADDRESS $PUBLIC_HOSTNAME" >> /etc/hosts
 
-env
-/usr/bin/supervisord -c /etc/supervisord.conf
+/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

@@ -1,24 +1,28 @@
-FROM stackinabox/supervisord:3.2.2
+FROM stackinabox/ibm-supervisord:3.2.2
 
-ADD supervisord.conf /etc/supervisord.conf
+MAINTAINER Tim Pouyer <tpouyer@us.ibm.com>
+
+# Pass in the location of the UCD agent install zip 
+ARG ARTIFACT_DOWNLOAD_URL 
+ARG ARTIFACT_VERSION
+
+# Add startup.sh script and addtional supervisord config
 ADD startup.sh /opt/startup.sh
+ADD supervisord.conf /tmp/supervisord.conf
 
-RUN /usr/bin/yum -y update && \
-  /usr/bin/yum -y install java-1.8.0-openjdk && \
-  yum clean packages
+# Copy in installation properties
+ADD install.properties /tmp/install.properties
 
-#Pass in the location of the UCD agent install
-ADD artifacts/ibm-ucd-agent-install /tmp/ibm-ucd-agent-install
-
-#get UCD server to connect to and agent name
+# get UCD server to connect to and agent name
 ENV UCD_SERVER=${UCD_SERVER:-localhost} \
   AGENT_NAME=${AGENT_NAME:-localagent}
 
-#Copy in installation properties
-ADD my.install.properties /tmp/my.install.properties
+# Install UCD agent
+RUN wget $ARTIFACT_DOWNLOAD_URL && \
+	unzip -q ibm-ucd-agent-$ARTIFACT_VERSION.zip -d /tmp && \
+	/tmp/ibm-ucd-agent-install/install-agent-from-file.sh /tmp/install.properties && \
+	cat /tmp/supervisord.conf >> /etc/supervisor/conf.d/supervisord.conf && \
+	rm -rf /tmp/my.install.properties /tmp/ibm-ucd-agent-install ibm-ucd-agent-$ARTIFACT_VERSION.zip /tmp/supervisord.conf
 
-#Install UCD agent
-RUN /tmp/ibm-ucd-agent-install/install-agent-from-file.sh /tmp/my.install.properties && \
-	rm -rf /tmp/ibm-ucd-agent-install
-
-CMD ["/opt/startup.sh"] 
+ENTRYPOINT ["/opt/startup.sh"]
+CMD []
