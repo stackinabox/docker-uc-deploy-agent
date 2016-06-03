@@ -1,7 +1,8 @@
 #!/bin/bash
 #update UCD agent properties
-sed -i "s/localhost/${UCD_SERVER}/" /opt/ibm-ucd/agent/conf/agent/installed.properties
-sed -i "s/localagent/${AGENT_NAME}/" /opt/ibm-ucd/agent/conf/agent/installed.properties 
+sed -i "s/localhost/$UCD_SERVER/" /opt/ibm-ucd/agent/conf/agent/installed.properties
+sed -i "s/localagent/$AGENT_NAME/" /opt/ibm-ucd/agent/conf/agent/installed.properties 
+sed -i "s/7918/$UCD_SERVER_JMS_PORT/" /opt/ibm-ucd/agent/conf/agent/installed.properties
 
 set -e
 

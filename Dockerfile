@@ -12,10 +12,13 @@ ADD supervisord.conf /tmp/supervisord.conf
 
 # Copy in installation properties
 ADD install.properties /tmp/install.properties
+ADD post-configure-as-import-agent.sh /root/post-configure-as-import-agent.sh
 
 # get UCD server to connect to and agent name
-ENV UCD_SERVER=${UCD_SERVER:-localhost} \
-  AGENT_NAME=${AGENT_NAME:-localagent}
+ENV UCD_SERVER=${UCD_SERVER:-$HOSTNAME} \
+	UCD_SERVER_HTTP_PORT=${UCD_SERVER_HTTP_PORT:-8080} \
+	UCD_SERVER_JMS_PORT=${UCD_SERVER_JMS_PORT:-7918} \
+  	AGENT_NAME=${AGENT_NAME:-localagent}
 
 # Install UCD agent
 RUN wget $ARTIFACT_DOWNLOAD_URL && \
