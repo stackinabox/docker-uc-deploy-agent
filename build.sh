@@ -3,7 +3,7 @@
 #### 
 #  The following variables must be set in the build.rc file before executing this script
 ####
-ARTIFACT_URL=${ARTIFACT_URL:-http://artifacts.stackinabox.io/urbancode/ibm-ucd-agent}
+ARTIFACT_URL=${ARTIFACT_URL:-}
 
 source ./build.rc
 

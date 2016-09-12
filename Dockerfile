@@ -15,17 +15,20 @@ ADD install.properties /tmp/install.properties
 ADD post-configure-as-import-agent.sh /root/post-configure-as-import-agent.sh
 
 # get UCD server to connect to and agent name
-ENV UCD_SERVER=${UCD_SERVER:-$HOSTNAME} \
-	UCD_SERVER_HTTP_PORT=${UCD_SERVER_HTTP_PORT:-8080} \
-	UCD_SERVER_JMS_PORT=${UCD_SERVER_JMS_PORT:-7918} \
-  	AGENT_NAME=${AGENT_NAME:-localagent}
+ENV DEPLOY_SERVER_URL=${DEPLOY_SERVER_URL:-} \
+    DEPLOY_SERVER_HOSTNAME=${DEPLOY_SERVER_HOSTNAME:-localhost} \
+    DEPLOY_SERVER_JMS_PORT=${DEPLOY_SERVER_JMS_PORT:-7918} \
+    AGENT_NAME=${AGENT_NAME:-localagent}
 
 # Install UCD agent
-RUN wget $ARTIFACT_DOWNLOAD_URL && \
+RUN mkdir -p /file-import && \
+	wget -Nv $ARTIFACT_DOWNLOAD_URL && \
 	unzip -q ibm-ucd-agent-$ARTIFACT_VERSION.zip -d /tmp && \
 	/tmp/ibm-ucd-agent-install/install-agent-from-file.sh /tmp/install.properties && \
 	cat /tmp/supervisord.conf >> /etc/supervisor/conf.d/supervisord.conf && \
 	rm -rf /tmp/my.install.properties /tmp/ibm-ucd-agent-install ibm-ucd-agent-$ARTIFACT_VERSION.zip /tmp/supervisord.conf
+
+VOLUME ["/file-import"]
 
 ENTRYPOINT ["/opt/startup.sh"]
 CMD []
